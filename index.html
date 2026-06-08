@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全犀模型系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Landing page specific styles */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(16,185,129,0.15) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .hero-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 800;
+            color: white;
+            margin: 0 auto 24px;
+            box-shadow: 0 20px 40px rgba(37,99,235,0.3);
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: rgba(255,255,255,0.6);
+            max-width: 480px;
+            margin: 0 auto 48px;
+            line-height: 1.8;
+        }
+
+        .role-cards {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .role-card {
+            width: 260px;
+            padding: 32px 24px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+
+        .role-card:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .role-card:active {
+            transform: translateY(-2px);
+        }
+
+        .role-card .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .role-card .title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .role-card .desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.6;
+        }
+
+        .role-card .enter-btn {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 28px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .role-card.studio .enter-btn {
+            background: rgba(59,130,246,0.3);
+            color: #93c5fd;
+        }
+        .role-card.studio:hover .enter-btn { background: #3b82f6; color: white; }
+
+        .role-card.brand .enter-btn {
+            background: rgba(16,185,129,0.3);
+            color: #6ee7b7;
+        }
+        .role-card.brand:hover .enter-btn { background: #10b981; color: white; }
+
+        .role-card.admin .enter-btn {
+            background: rgba(245,158,11,0.3);
+            color: #fcd34d;
+        }
+        .role-card.admin:hover .enter-btn { background: #f59e0b; color: white; }
+
+        .footer-info {
+            position: absolute;
+            bottom: 24px;
+            z-index: 1;
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-logo">全</div>
+            <h1>全犀模型系统</h1>
+            <p>四方撮合私域直播平台 · 数据展示与业务管理系统<br>为直播间和品牌方提供透明的数据服务</p>
+
+            <div class="role-cards">
+                <a href="studio.html" class="role-card studio">
+                    <div class="icon">📺</div>
+                    <div class="title">直播间入口</div>
+                    <div class="desc">查看入驻品牌、竞对情报、流量方资源，了解平台供应链实力</div>
+                    <div class="enter-btn">进入直播间后台 →</div>
+                </a>
+
+                <a href="brand.html" class="role-card brand">
+                    <div class="icon">🏢</div>
+                    <div class="title">品牌方入口</div>
+                    <div class="desc">查看合作直播间、人群画像、销售数据，掌握平台流量能力</div>
+                    <div class="enter-btn">进入品牌方后台 →</div>
+                </a>
+
+                <a href="admin.html" class="role-card admin">
+                    <div class="icon">⚙️</div>
+                    <div class="title">后台管理</div>
+                    <div class="desc">管理直播间、品牌方、订单和流量方数据，配置系统参数</div>
+                    <div class="enter-btn">进入管理后台 →</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            全犀大脑 · 运营中心 &nbsp;|&nbsp; 数据仅供内部演示使用
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全犀平台 · 品牌方后台</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <span class="logo">全</span>
+            全犀平台
+        </a>
+        <div class="navbar-right">
+            <span class="role-badge brand">🏢 品牌方后台</span>
+            <span style="font-size:13px;color:var(--gray-500);">品牌 ***</span>
+            <a href="index.html" class="btn btn-outline btn-sm">退出</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Overview Stats -->
+        <div class="stat-grid" id="overviewStats"></div>
+
+        <!-- 直播间资源 + Top10 side by side -->
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px;margin-bottom:24px;">
+            <!-- 直播间资源看板 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📺 合作直播间资源</h2>
+                    <span style="font-size:13px;color:var(--gray-500);" id="studioCount"></span>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead><tr>
+                                <th>直播间</th>
+                                <th>流量类型</th>
+                                <th>地点</th>
+                                <th>受众规模</th>
+                                <th>订单金额</th>
+                                <th>退货率</th>
+                            </tr></thead>
+                            <tbody id="studioTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="studioPagination"></div>
+                </div>
+            </div>
+
+            <!-- Top10 品牌案例 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>🏆 销量 TOP 10 品牌</h2>
+                    <span style="font-size:13px;color:var(--gray-500);">用来谈授权的案例</span>
+                </div>
+                <div class="card-body" id="topBrandsBody"></div>
+            </div>
+        </div>
+
+        <!-- 人群画像 + 订单统计 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+            <!-- 人群画像 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>👥 平台人群画像</h2>
+                </div>
+                <div class="card-body">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="portraitGrid">
+                        <div class="chart-box"><h4>年龄分布</h4><canvas id="chartAge"></canvas></div>
+                        <div class="chart-box"><h4>性别比例</h4><canvas id="chartGender"></canvas></div>
+                        <div class="chart-box"><h4>消费能力</h4><canvas id="chartConsumption"></canvas></div>
+                        <div class="chart-box"><h4>品类偏好</h4><canvas id="chartCategory"></canvas></div>
+                        <div class="chart-box"><h4>流量来源</h4><canvas id="chartTraffic"></canvas></div>
+                        <div class="chart-box"><h4>复购率</h4><canvas id="chartRepurchase"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 订单数据统计 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📋 订单数据统计</h2>
+                    <span style="font-size:13px;color:var(--gray-500);">近30天</span>
+                </div>
+                <div class="card-body">
+                    <div id="orderStatsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;"></div>
+                    <div class="chart-box"><h4>订单趋势（近30天）</h4><canvas id="chartOrderTrend"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="js/data.js"></script>
+    <script src="js/brand.js"></script>
+</body>
+</html>

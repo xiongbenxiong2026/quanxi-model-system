@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全犀模型系统 · 管理后台</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <span class="logo">全</span>
+            全犀模型系统
+        </a>
+        <div class="navbar-right">
+            <span class="role-badge admin">⚙️ 管理后台</span>
+            <a href="index.html" class="btn btn-outline btn-sm">← 返回首页</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Stats -->
+        <div class="stat-grid" id="statsGrid"></div>
+
+        <!-- Alert area -->
+        <div id="alertArea"></div>
+
+        <!-- Tabs -->
+        <div class="card">
+            <div class="card-header">
+                <div class="tabs" id="tabBar">
+                    <button class="tab-item active" data-tab="studios">直播间管理</button>
+                    <button class="tab-item" data-tab="brands">品牌方管理</button>
+                    <button class="tab-item" data-tab="orders">订单数据</button>
+                    <button class="tab-item" data-tab="traffic">流量方管理</button>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnAdd">+ 新增</button>
+            </div>
+            <div class="card-body">
+                <!-- Search + pagination per tab rendered here -->
+                <div id="tabContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CRUD Modal -->
+    <div class="modal-overlay" id="formModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">新增</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" id="btnSave">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="max-width:400px;">
+            <div class="modal-header">
+                <h3>确认删除</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteMsg">确定要删除这条记录吗？此操作不可撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeDeleteModal()">取消</button>
+                <button class="btn btn-danger" id="btnConfirmDelete">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

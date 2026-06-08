@@ -12,7 +12,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%);
+            background: linear-gradient(135deg, #030b1f 0%, #072058 50%, #0052d9 100%);
             position: relative;
             overflow: hidden;
         }
@@ -21,8 +21,8 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 50%, rgba(16,185,129,0.15) 0%, transparent 50%);
+                radial-gradient(ellipse at 20% 50%, rgba(0,82,217,0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(0,168,112,0.1) 0%, transparent 50%);
         }
         .hero-content {
             position: relative;
@@ -31,18 +31,14 @@
             padding: 40px 24px;
         }
         .hero-logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: 800;
-            color: white;
-            margin: 0 auto 24px;
-            box-shadow: 0 20px 40px rgba(37,99,235,0.3);
+            width: 200px;
+            height: auto;
+            margin: 0 auto 28px;
+        }
+        .hero-logo img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
         .hero h1 {
             font-size: 36px;
@@ -230,7 +226,7 @@
 <body>
     <div class="hero">
         <div class="hero-content">
-            <div class="hero-logo">全</div>
+            <div class="hero-logo"><img src="image/logo.png" alt="全犀"></div>
             <h1>全犀模型系统</h1>
             <p>四方撮合私域直播平台 · 数据展示与业务管理系统</p>
 
@@ -279,7 +275,7 @@
                        onkeydown="if(event.key==='Enter') doLogin()">
             </div>
 
-            <button class="login-btn" id="loginBtn" style="background:var(--primary-gradient);box-shadow:0 4px 14px rgba(37,99,235,0.3);" onclick="doLogin()">
+            <button class="login-btn" id="loginBtn" style="background:var(--primary-gradient);box-shadow:0 4px 12px rgba(0,82,217,0.3);" onclick="doLogin()">
                 登 录
             </button>
         </div>

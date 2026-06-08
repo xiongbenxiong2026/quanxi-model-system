@@ -55,7 +55,7 @@ function renderStudios() {
     const total = studios.length;
     const paged = studios.slice((studioPage - 1) * STUDIO_PAGE_SIZE, studioPage * STUDIO_PAGE_SIZE);
 
-    document.getElementById('studioCount').textContent = `共 ${total} 个合作直播间（最小${(4000).toLocaleString()}人 · 最大${(80000).toLocaleString()}人 · 平均12,000人）`;
+    document.getElementById('studioCount').textContent = `共 ${total} 个合作直播间`;
     document.getElementById('studioTableBody').innerHTML = paged.map(s => `
         <tr>
             <td><strong>${s.name}</strong><br><span class="text-muted" style="font-size:12px;">${s.code}</span></td>

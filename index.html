@@ -6,7 +6,6 @@
     <title>全犀模型系统</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Landing page specific styles */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -17,7 +16,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .hero::before {
             content: '';
             position: absolute;
@@ -26,14 +24,12 @@
                 radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.3) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 50%, rgba(16,185,129,0.15) 0%, transparent 50%);
         }
-
         .hero-content {
             position: relative;
             z-index: 1;
             text-align: center;
             padding: 40px 24px;
         }
-
         .hero-logo {
             width: 80px;
             height: 80px;
@@ -48,7 +44,6 @@
             margin: 0 auto 24px;
             box-shadow: 0 20px 40px rgba(37,99,235,0.3);
         }
-
         .hero h1 {
             font-size: 36px;
             font-weight: 800;
@@ -56,7 +51,6 @@
             margin-bottom: 12px;
             letter-spacing: -0.5px;
         }
-
         .hero p {
             font-size: 16px;
             color: rgba(255,255,255,0.6);
@@ -65,16 +59,138 @@
             line-height: 1.8;
         }
 
-        .role-cards {
-            display: flex;
-            gap: 20px;
+        /* ====== 登录弹窗 ====== */
+        .login-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.6);
+            z-index: 1000;
+            align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .login-modal.show { display: flex; }
+
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            width: 400px;
+            max-width: 90vw;
+            padding: 40px 36px 32px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: loginIn 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes loginIn {
+            from { opacity: 0; transform: scale(0.95) translateY(16px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
+        .login-box .login-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+        }
+        .login-box .login-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+        .login-box .login-sub {
+            font-size: 14px;
+            text-align: center;
+            color: var(--gray-400);
+            margin-bottom: 28px;
+        }
+
+        .login-box .form-group {
+            margin-bottom: 18px;
+        }
+        .login-box .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+        .login-box .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+            background: var(--gray-50);
+        }
+        .login-box .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+            background: white;
+        }
+        .login-box .form-group input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .login-box .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+        .login-box .login-btn:hover { transform: translateY(-1px); }
+        .login-box .login-btn:active { transform: translateY(0); }
+
+        .login-box .login-error {
+            display: none;
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 16px;
+            border: 1px solid #fecaca;
+        }
+        .login-box .login-error.show { display: block; }
+
+        .login-box .login-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            transition: all 0.15s;
+        }
+        .login-box .login-close:hover { background: var(--gray-200); }
+        .login-box { position: relative; }
+
+        .role-cards { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
         .role-card {
-            width: 260px;
-            padding: 32px 24px;
+            width: 260px; padding: 32px 24px;
             background: rgba(255,255,255,0.08);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255,255,255,0.12);
@@ -85,68 +201,29 @@
             text-decoration: none;
             color: white;
         }
-
         .role-card:hover {
             background: rgba(255,255,255,0.15);
             transform: translateY(-4px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
-
-        .role-card:active {
-            transform: translateY(-2px);
-        }
-
-        .role-card .icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        .role-card .title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .role-card .desc {
-            font-size: 13px;
-            color: rgba(255,255,255,0.5);
-            line-height: 1.6;
-        }
-
+        .role-card .icon { font-size: 48px; margin-bottom: 16px; }
+        .role-card .title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .role-card .desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; }
         .role-card .enter-btn {
-            display: inline-block;
-            margin-top: 16px;
-            padding: 8px 28px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
+            display: inline-block; margin-top: 16px;
+            padding: 8px 28px; border-radius: 20px;
+            font-size: 13px; font-weight: 600; transition: all 0.2s;
         }
-
-        .role-card.studio .enter-btn {
-            background: rgba(59,130,246,0.3);
-            color: #93c5fd;
-        }
+        .role-card.studio .enter-btn { background: rgba(59,130,246,0.3); color: #93c5fd; }
         .role-card.studio:hover .enter-btn { background: #3b82f6; color: white; }
-
-        .role-card.brand .enter-btn {
-            background: rgba(16,185,129,0.3);
-            color: #6ee7b7;
-        }
+        .role-card.brand .enter-btn { background: rgba(16,185,129,0.3); color: #6ee7b7; }
         .role-card.brand:hover .enter-btn { background: #10b981; color: white; }
-
-        .role-card.admin .enter-btn {
-            background: rgba(245,158,11,0.3);
-            color: #fcd34d;
-        }
+        .role-card.admin .enter-btn { background: rgba(245,158,11,0.3); color: #fcd34d; }
         .role-card.admin:hover .enter-btn { background: #f59e0b; color: white; }
 
         .footer-info {
-            position: absolute;
-            bottom: 24px;
-            z-index: 1;
-            font-size: 12px;
-            color: rgba(255,255,255,0.3);
+            position: absolute; bottom: 24px; z-index: 1;
+            font-size: 12px; color: rgba(255,255,255,0.3);
         }
     </style>
 </head>
@@ -155,37 +232,109 @@
         <div class="hero-content">
             <div class="hero-logo">全</div>
             <h1>全犀模型系统</h1>
-            <p>四方撮合私域直播平台 · 数据展示与业务管理系统<br>为直播间和品牌方提供透明的数据服务</p>
+            <p>四方撮合私域直播平台 · 数据展示与业务管理系统</p>
 
             <div class="role-cards">
-                <a href="studio.html" class="role-card studio">
+                <div class="role-card studio" onclick="openLogin('studio')">
                     <div class="icon">📺</div>
                     <div class="title">直播间入口</div>
-                    <div class="desc">查看入驻品牌、竞对情报、流量方资源，了解平台供应链实力</div>
-                    <div class="enter-btn">进入直播间后台 →</div>
-                </a>
-
-                <a href="brand.html" class="role-card brand">
+                    <div class="desc">查看入驻品牌、平台销售数据、流量方资源</div>
+                    <div class="enter-btn">进入直播间 →</div>
+                </div>
+                <div class="role-card brand" onclick="openLogin('brand')">
                     <div class="icon">🏢</div>
                     <div class="title">品牌方入口</div>
-                    <div class="desc">查看合作直播间、人群画像、销售数据，掌握平台流量能力</div>
+                    <div class="desc">查看合作直播间、人群画像、销售数据排行</div>
                     <div class="enter-btn">进入品牌方后台 →</div>
-                </a>
-
-                <a href="admin.html" class="role-card admin">
+                </div>
+                <div class="role-card admin" onclick="openLogin('admin')">
                     <div class="icon">⚙️</div>
                     <div class="title">后台管理</div>
-                    <div class="desc">管理直播间、品牌方、订单和流量方数据，配置系统参数</div>
+                    <div class="desc">管理直播间、品牌方、订单和流量方数据</div>
                     <div class="enter-btn">进入管理后台 →</div>
-                </a>
+                </div>
             </div>
         </div>
+        <div class="footer-info">全犀大脑 · 运营中心 &nbsp;|&nbsp; 数据仅供内部演示使用</div>
+    </div>
 
-        <div class="footer-info">
-            全犀大脑 · 运营中心 &nbsp;|&nbsp; 数据仅供内部演示使用
+    <!-- 登录弹窗 -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-box">
+            <button class="login-close" onclick="closeLogin()">×</button>
+            <div id="loginIcon" class="login-icon" style="background:#dbeafe;">📺</div>
+            <div class="login-title" id="loginTitle">直播间登录</div>
+            <div class="login-sub" id="loginSub">请输入账号密码进入系统</div>
+
+            <div class="login-error" id="loginError">账号或密码错误，请重试</div>
+
+            <div class="form-group">
+                <label>账号</label>
+                <input type="text" id="loginUser" placeholder="请输入账号" autocomplete="off"
+                       onkeydown="if(event.key==='Enter') doLogin()">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="loginPass" placeholder="请输入密码"
+                       onkeydown="if(event.key==='Enter') doLogin()">
+            </div>
+
+            <button class="login-btn" id="loginBtn" style="background:var(--primary-gradient);box-shadow:0 4px 14px rgba(37,99,235,0.3);" onclick="doLogin()">
+                登 录
+            </button>
         </div>
     </div>
 
-    <script src="js/data.js"></script>
+    <script>
+        // ====== 登录配置 ======
+        const ACCOUNTS = {
+            studio: { user: 'studio', pass: 'studio123', title: '直播间登录', icon: '📺', color: '#dbeafe', redirect: 'studio.html' },
+            brand:  { user: 'brand',  pass: 'brand123',  title: '品牌方登录', icon: '🏢', color: '#d1fae5', redirect: 'brand.html' },
+            admin:  { user: 'admin',  pass: 'admin123',  title: '管理员登录', icon: '⚙️', color: '#fef3c7', redirect: 'admin.html' }
+        };
+
+        let currentRole = null;
+
+        function openLogin(role) {
+            currentRole = role;
+            const cfg = ACCOUNTS[role];
+            document.getElementById('loginIcon').textContent = cfg.icon;
+            document.getElementById('loginIcon').style.background = cfg.color;
+            document.getElementById('loginTitle').textContent = cfg.title;
+            document.getElementById('loginUser').value = '';
+            document.getElementById('loginPass').value = '';
+            document.getElementById('loginError').classList.remove('show');
+            document.getElementById('loginModal').classList.add('show');
+            setTimeout(() => document.getElementById('loginUser').focus(), 100);
+        }
+
+        function closeLogin() {
+            document.getElementById('loginModal').classList.remove('show');
+            currentRole = null;
+        }
+
+        function doLogin() {
+            const cfg = ACCOUNTS[currentRole];
+            if (!cfg) return;
+
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+
+            if (user === cfg.user && pass === cfg.pass) {
+                document.getElementById('loginError').classList.remove('show');
+                closeLogin();
+                window.location.href = cfg.redirect;
+            } else {
+                document.getElementById('loginError').classList.add('show');
+                document.getElementById('loginPass').value = '';
+                document.getElementById('loginPass').focus();
+            }
+        }
+
+        // 点击遮罩关闭
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLogin();
+        });
+    </script>
 </body>
 </html>

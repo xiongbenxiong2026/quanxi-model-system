@@ -53,7 +53,7 @@ function renderBrands() {
     const total = brands.length;
     const paged = brands.slice((brandPage - 1) * BRAND_PAGE_SIZE, brandPage * BRAND_PAGE_SIZE);
 
-    document.getElementById('brandCount').textContent = `共 ${total} 个入驻品牌（展示 ${BRAND_PAGE_SIZE} 个/页）`;
+    document.getElementById('brandCount').textContent = `共 ${total} 个入驻品牌`;
 
     document.getElementById('brandTableBody').innerHTML = paged.map(b => `
         <tr>
@@ -97,7 +97,7 @@ function renderPlatformSales() {
         <div style="background:#eff6ff;padding:16px;border-radius:8px;">
             <div style="font-size:12px;color:var(--gray-500);margin-bottom:4px;">日均销售额</div>
             <div style="font-size:24px;font-weight:700;color:#2563eb;">¥${(dailySales / 10000).toFixed(1)}万</div>
-            <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">日均 ${metrics.totalAudience.toLocaleString()} 人 × ¥${metrics.dailyPerCapitaSpend}</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">日均销售额</div>
         </div>
         <div style="background:#fffbeb;padding:16px;border-radius:8px;">
             <div style="font-size:12px;color:var(--gray-500);margin-bottom:4px;">品牌方销售额</div>

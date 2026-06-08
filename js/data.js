@@ -227,31 +227,31 @@ function generateOrders(studios, brands) {
     return orders;
 }
 
-// ====== 生成流量方（8个） ======
+// ====== 生成流量方（8个，地区精确匹配，数据减半） ======
 function generateTrafficSources() {
-    const names = [
-        { name: '老庞服务商', type: '线下拉新', desc: '郑州本地社区团长网络，覆盖中老年消费群体' },
-        { name: '徐阳渠道', type: '线下拉新', desc: '杭州区域商超合作渠道，日触达5000+消费者' },
-        { name: '成都地推团队', type: '线下拉新', desc: '成都及周边城市地推团队，擅长下沉市场引流' },
-        { name: '广州批发渠道', type: '线下拉新', desc: '广州批发市场商户联盟，覆盖源头工厂客户' },
-        { name: '精准粉团队', type: '打粉团队', desc: '信息流投放优化团队，擅长美妆/食品类目精准获客' },
-        { name: '短视频引流组', type: '打粉团队', desc: '抖音/视频号短视频矩阵，月产出200+条引流视频' },
-        { name: '社群裂变组', type: '打粉团队', desc: '微信社群裂变运营，72小时转化率行业领先' },
-        { name: '直播切片分发', type: '打粉团队', desc: '直播精彩片段二次分发，覆盖视频号/快手多平台' }
+    const sources = [
+        { name: '老庞服务商', type: '线下拉新', region: '大连市', desc: '大连本地社区团长网络' },
+        { name: '徐阳渠道', type: '线下拉新', region: '杭州市', desc: '杭州区域商超合作渠道' },
+        { name: '成都地推团队', type: '线下拉新', region: '成都市', desc: '成都及周边城市地推团队' },
+        { name: '广州批发渠道', type: '线下拉新', region: '广州市', desc: '广州批发市场商户联盟' },
+        { name: '精准粉团队', type: '打粉团队', region: '深圳市', desc: '信息流投放精准获客团队' },
+        { name: '短视频引流组', type: '打粉团队', region: '杭州市', desc: '抖音/视频号矩阵引流团队' },
+        { name: '社群裂变组', type: '打粉团队', region: '北京市', desc: '微信社群裂变运营团队' },
+        { name: '直播切片分发', type: '打粉团队', region: '成都市', desc: '直播精彩片段多平台分发团队' }
     ];
 
-    return names.map((n, i) => ({
+    return sources.map((s, i) => ({
         id: `traffic_${i + 1}`,
-        name: n.name,
-        type: n.type,
-        region: pick(CITIES),
-        scale: randomInt(8000, 80000),
-        monthlyCapacity: randomInt(15000, 150000),
-        commission: randomFloat(8, 25),
+        name: s.name,
+        type: s.type,
+        region: s.region,
+        scale: randomInt(4000, 40000),        // 减半：原 8000-80000
+        monthlyCapacity: randomInt(7500, 75000),  // 减半：原 15000-150000
+        commission: randomFloat(4, 12),        // 减半：原 8-25
         contact: '已脱敏',
         status: 'active',
         cooperateSince: generateDate('2026-04-01', 40),
-        description: n.desc
+        description: s.desc
     }));
 }
 

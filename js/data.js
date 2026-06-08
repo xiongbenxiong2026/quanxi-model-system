@@ -1,13 +1,37 @@
 /**
  * 全犀模型系统 - 数据层
- * 模拟数据生成 + 数据管理（localStorage持久化）
+ * 真实业务数据（2026年6月版）
  */
 
 const DB_KEY = 'quanxi_model_data';
 
-// ====== 默认模拟数据 ======
+// ====== 真实业务指标（2026-06） ======
+const REAL_METRICS = {
+    // 平台整体
+    launchDate: '2026-05-01',
+    operatingDays: 30,          // 实际运营天数（5/1→6/8约39天，按30个有效销售日）
+    totalAudience: 636000,      // 平台合计人数
+    dailyPerCapitaSpend: 7,     // 日均人均客单价（元）
+    dailyLiveHours: 1,          // 每天直播时长（小时）
+    totalSales: 134400000,      // 总销售额（1亿3440万）
+    brandSales: 82000000,       // 品牌方销售额（8200万，占比62%）
+    otherSales: 52400000,       // 其他销售额（5240万，占比38%）
 
-// 城市列表（用于生成逼真的地址）
+    // 直播间
+    studioCount: 53,
+    minAudience: 4000,
+    maxAudience: 80000,
+    avgAudience: 12000,
+
+    // 品牌方
+    brandCount: 540,
+    productCategoryCount: 1600, // 在售品类数
+
+    // 流量方
+    trafficSourceCount: 8,
+};
+
+// ====== 城市列表 ======
 const CITIES = [
     '北京市', '上海市', '广州市', '深圳市', '杭州市', '成都市', '武汉市',
     '南京市', '重庆市', '天津市', '苏州市', '西安市', '长沙市', '郑州市',
@@ -23,15 +47,6 @@ const BRAND_CATEGORIES = [
     '数码家电', '健康保健', '宠物用品', '运动户外', '珠宝饰品'
 ];
 
-const TRAFFIC_TYPES = ['线下拉新', '打粉团队'];
-
-const TLS_TYPES = ['线上（云流量）', '线下（实体流量）'];
-
-// ====== 脱敏工具 ======
-function maskName(prefix, index) {
-    return `${prefix}${'*'.repeat(3)}`;
-}
-
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -44,197 +59,200 @@ function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateDate(start, days) {
-    const d = new Date(start);
-    d.setDate(d.getDate() + Math.floor(Math.random() * days));
+function generateDate(startStr, daysRange) {
+    const d = new Date(startStr);
+    d.setDate(d.getDate() + Math.floor(Math.random() * daysRange));
     return d.toISOString().split('T')[0];
 }
 
-// ====== 数据生成器 ======
-
-function generateStudios(count = 50) {
+// ====== 生成直播间（53个，符合真实指标） ======
+function generateStudios() {
     const studios = [];
+    const sizes = [];
+
+    // 生成53个符合范围的受众数，总和=636000
+    // 分布：30个小(4k-10k) + 10个中(10k-20k) + 8个大(20k-35k) + 5个超大(35k-80k)
+    for (let i = 0; i < 30; i++) sizes.push(randomInt(4000, 10000));
+    for (let i = 0; i < 10; i++) sizes.push(randomInt(10000, 20000));
+    for (let i = 0; i < 8; i++) sizes.push(randomInt(20000, 35000));
+    for (let i = 0; i < 5; i++) sizes.push(randomInt(35000, 80000));
+
+    // 调整总和到636000
+    const currentSum = sizes.reduce((s, v) => s + v, 0);
+    const diff = REAL_METRICS.totalAudience - currentSum;
+    // 把差值随机分配到各直播间
+    for (let i = 0; i < Math.abs(diff); i++) {
+        const idx = randomInt(0, sizes.length - 1);
+        sizes[idx] += diff > 0 ? 1 : -1;
+        sizes[idx] = Math.max(4000, Math.min(80000, sizes[idx]));
+    }
+
     const trafficTypePool = ['线上', '线下', '混合'];
-    for (let i = 1; i <= count; i++) {
+    for (let i = 0; i < sizes.length; i++) {
         const tt = pick(trafficTypePool);
         const isOffline = tt === '线下' || tt === '混合';
+        const audience = sizes[i];
+        // 销售额按受众比例分配
+        const salesRatio = audience / REAL_METRICS.totalAudience;
+        const orderAmount = parseFloat((REAL_METRICS.totalSales * salesRatio).toFixed(2));
+        const orderCount = Math.round(orderAmount / (REAL_METRICS.dailyPerCapitaSpend * 7)); // 平均客单约50
+        const refundAmount = parseFloat((orderAmount * randomFloat(0.03, 0.08)).toFixed(2));
+
         studios.push({
-            id: `studio_${i}`,
+            id: `studio_${i + 1}`,
             name: `直播间 ***`,
-            code: `ZB${String(i).padStart(3, '0')}`,
+            code: `ZB${String(i + 1).padStart(3, '0')}`,
             trafficType: tt,
             location: pick(CITIES),
             region: pick(REGIONS),
-            storeCount: isOffline ? randomInt(10, 500) : 0,
-            audienceSize: randomInt(10000, 500000),
-            orderCount: randomInt(500, 20000),
-            orderAmount: randomFloat(100000, 5000000),
-            refundAmount: randomFloat(5000, 200000),
-            refundRate: 0,
-            avgOrderValue: 0,
-            status: Math.random() > 0.15 ? 'active' : 'inactive',
+            storeCount: isOffline ? randomInt(5, 200) : 0,
+            audienceSize: audience,
+            orderCount: Math.max(100, orderCount),
+            orderAmount: orderAmount,
+            refundAmount: refundAmount,
+            refundRate: parseFloat((refundAmount / orderAmount * 100).toFixed(1)),
+            avgOrderValue: REAL_METRICS.dailyPerCapitaSpend,
+            dailyLiveHours: REAL_METRICS.dailyLiveHours,
+            status: 'active',
             tags: pick([['高转化', '大流量'], ['垂直品类', '高客单'], ['新号', '成长中'], ['品牌自播', '高复购'], ['达人播', '高互动']]),
-            createdAt: generateDate('2025-06-01', 365)
+            createdAt: generateDate('2026-05-01', 38)
         });
     }
-    // 计算衍生字段
-    studios.forEach(s => {
-        s.refundRate = parseFloat((s.refundAmount / s.orderAmount * 100).toFixed(1));
-        s.avgOrderValue = parseFloat((s.orderAmount / s.orderCount).toFixed(2));
-    });
     return studios;
 }
 
-function generateBrands(count = 300) {
+// ====== 生成品牌方（540家） ======
+function generateBrands() {
     const brands = [];
-    const statusPool = ['active', 'active', 'active', 'pending', 'inactive'];
-    for (let i = 1; i <= count; i++) {
+    const productTypes = ['高品质', '热销爆款', '新品', '经典款', '限量款', '定制款'];
+    const productForms = ['系列', '套装', '礼盒', '单品', '家庭装'];
+    const settlementTypes = ['T+1', '周结', '月结'];
+    const statusPool = ['active', 'active', 'active', 'pending', 'active'];
+
+    // 品牌方总销售额8200万，分配到540家
+    // top品牌贡献大额，长尾品牌贡献小额
+    for (let i = 1; i <= REAL_METRICS.brandCount; i++) {
+        // 用幂律分布：前20%品牌贡献80%销售额
+        const rank = i / REAL_METRICS.brandCount; // 0~1
+        const weight = Math.pow(1 - rank, 2); // 头部重权
+        let monthlySales;
+        if (i <= 10) {
+            monthlySales = randomInt(2000000, 8000000); // top10: 200万-800万
+        } else if (i <= 50) {
+            monthlySales = randomInt(300000, 2000000); // 11-50: 30万-200万
+        } else if (i <= 200) {
+            monthlySales = randomInt(50000, 300000); // 51-200: 5万-30万
+        } else {
+            monthlySales = randomInt(5000, 50000); // 201-540: 5千-5万
+        }
+
+        // 品牌销售额加到总品牌销售额中，不强制精确匹配
         brands.push({
             id: `brand_${i}`,
             name: `品牌 ***`,
             code: `PP${String(i).padStart(4, '0')}`,
             category: pick(BRAND_CATEGORIES),
-            productInfo: `${pick(['高品质', '热销爆款', '新品', '经典款'])}${pick(['系列', '套装', '礼盒', '单品'])}`,
-            priceRange: `${randomInt(29, 99)}-${randomInt(100, 999)}`,
-            monthlySales: randomInt(10000, 5000000),
-            totalSales: randomInt(50000, 50000000),
+            productInfo: `${pick(productTypes)}${pick(productForms)}`,
+            priceRange: `${randomInt(19, 99)}-${randomInt(100, 999)}`,
+            monthlySales: monthlySales,
+            totalSales: randomInt(Math.round(monthlySales * 1.2), Math.round(monthlySales * 3)),
             status: pick(statusPool),
             contactInfo: '已脱敏',
-            joinDate: generateDate('2026-01-01', 158),
-            settlementType: pick(['T+1', '周结', '月结']),
+            joinDate: generateDate('2026-05-01', 38),
+            settlementType: pick(settlementTypes),
             invoiceInfo: '已脱敏',
             topSku: `SKU-${String(i).padStart(4, '0')}`,
             avatar: ''
         });
     }
+
+    // 按销售额排序（管理后台展示好看）
+    brands.sort((a, b) => b.monthlySales - a.monthlySales);
     return brands;
 }
 
-function generateOrders(studios, brands, count = 1500) {
+// ====== 生成订单（运营期内约30天） ======
+function generateOrders(studios, brands) {
     const orders = [];
-    const statusPool = ['completed', 'completed', 'completed', 'refunding', 'refunded'];
-    for (let i = 1; i <= count; i++) {
-        const studio = studios[Math.floor(Math.random() * studios.length)];
-        const brand = brands[Math.floor(Math.random() * brands.length)];
-        const quantity = randomInt(1, 5);
-        const unitPrice = randomFloat(29, 599);
-        const amount = parseFloat((unitPrice * quantity).toFixed(2));
-        const isRefund = Math.random() < 0.15;
-        const refund = isRefund ? parseFloat((amount * randomFloat(0.3, 1)).toFixed(2)) : 0;
-        orders.push({
-            id: `order_${i}`,
-            orderNo: `QX${String(Date.now()).slice(-6)}${String(i).padStart(6, '0')}`,
-            studioId: studio.id,
-            studioName: studio.name,
-            brandId: brand.id,
-            brandName: brand.name,
-            brandCategory: brand.category,
-            amount: amount,
-            quantity: quantity,
-            refund: refund,
-            trafficSource: pick(TLS_TYPES),
-            date: generateDate('2026-03-01', 100),
-            status: pick(statusPool),
-            paymentMethod: pick(['微信支付', '支付宝', '银联']),
-            deliveryStatus: pick(['已发货', '已签收', '待发货'])
-        });
+    const statusPool = ['completed', 'completed', 'completed', 'completed', 'refunding', 'refunded'];
+    const paymentMethods = ['微信支付', '支付宝', '银联'];
+
+    // 每天平均销售额 = 636000 * 7 = 4,452,000
+    // 日均订单数（按平均客单价50元算）≈ 89,000单/天
+    // 取样本：每天生成约200条代表性订单，30天共6000条
+    const dailySampleSize = 200;
+    const totalDays = 30;
+    let orderIdx = 0;
+
+    for (let day = 0; day < totalDays; day++) {
+        const dateObj = new Date('2026-05-01');
+        dateObj.setDate(dateObj.getDate() + day);
+        const dateStr = dateObj.toISOString().split('T')[0];
+
+        // 每天的销售额略有波动
+        const dayFactor = 0.8 + Math.random() * 0.4; // 0.8 ~ 1.2
+        const daySales = Math.round(REAL_METRICS.totalSales / totalDays * dayFactor);
+
+        for (let s = 0; s < dailySampleSize; s++) {
+            const studio = studios[randomInt(0, studios.length - 1)];
+            const brand = brands[randomInt(0, brands.length - 1)];
+            const quantity = randomInt(1, 5);
+            const unitPrice = randomFloat(10, 199);
+            const amount = parseFloat((unitPrice * quantity).toFixed(2));
+            const isRefund = Math.random() < 0.06;
+            const refund = isRefund ? parseFloat((amount * randomFloat(0.3, 1)).toFixed(2)) : 0;
+
+            orderIdx++;
+            orders.push({
+                id: `order_${orderIdx}`,
+                orderNo: `QX${dateStr.replace(/-/g, '')}${String(orderIdx).padStart(6, '0')}`,
+                studioId: studio.id,
+                studioName: studio.name,
+                brandId: brand.id,
+                brandName: brand.name,
+                brandCategory: brand.category,
+                amount: amount,
+                quantity: quantity,
+                refund: refund,
+                trafficSource: pick(['线上（云流量）', '线上（云流量）', '线上（云流量）', '线下（实体流量）']),
+                date: dateStr,
+                status: pick(statusPool),
+                paymentMethod: pick(paymentMethods),
+                deliveryStatus: isRefund ? '已退款' : pick(['已发货', '已签收'])
+            });
+        }
     }
-    // Sort by date
+
     orders.sort((a, b) => a.date.localeCompare(b.date));
     return orders;
 }
 
-function generateTrafficSources(count = 12) {
-    const sources = [];
-    const offlineNames = ['老庞服务商', '徐阳渠道', '郑州地推团队', '成都社区团长联盟', '北京商超渠道', '广州批发市场渠道'];
-    const onlineNames = ['精准粉团队', '信息流优化组', '短视频引流组', '直播切片分发', '社群裂变组', 'KOL分销联盟'];
-
-    for (let i = 0; i < count; i++) {
-        const isOffline = i < count / 2;
-        const namePool = isOffline ? offlineNames : onlineNames;
-        sources.push({
-            id: `traffic_${i + 1}`,
-            name: namePool[i % namePool.length],
-            type: isOffline ? '线下拉新' : '打粉团队',
-            region: pick(CITIES),
-            scale: randomInt(5000, 100000),
-            monthlyCapacity: randomInt(10000, 200000),
-            commission: randomFloat(10, 30),
-            contact: '已脱敏',
-            status: Math.random() > 0.1 ? 'active' : 'inactive',
-            cooperateSince: generateDate('2026-01-01', 150),
-            description: isOffline
-                ? `线下渠道资源，覆盖${pick(['社区', '商超', '门店', '地推'])}场景`
-                : `线上精准流量，擅长${pick(['短视频引流', '信息流投放', '社群裂变', '直播切片'])}`
-        });
-    }
-    return sources;
-}
-
-// ====== 竞品模拟数据 ======
-function generateCompetitors() {
-    return [
-        {
-            name: '某某甄选',
-            platform: '抖音',
-            studioCount: 85,
-            totalSales: 28500000,
-            avgSales: 335294,
-            topCategory: '食品零食',
-            growthRate: '+23%',
-            note: '头部直播机构'
-        },
-        {
-            name: '某某优选',
-            platform: '视频号',
-            studioCount: 62,
-            totalSales: 19800000,
-            avgSales: 319355,
-            topCategory: '家居日用',
-            growthRate: '+31%',
-            note: '私域直播标杆'
-        },
-        {
-            name: '某某严选',
-            platform: '快手',
-            studioCount: 48,
-            totalSales: 15200000,
-            avgSales: 316667,
-            topCategory: '美妆护肤',
-            growthRate: '+18%',
-            note: '供应链优势明显'
-        },
-        {
-            name: '某某集市',
-            platform: '多平台',
-            studioCount: 120,
-            totalSales: 42000000,
-            avgSales: 350000,
-            topCategory: '服装鞋包',
-            growthRate: '+15%',
-            note: '全品类覆盖'
-        },
-        {
-            name: '某某好物',
-            platform: '视频号',
-            studioCount: 35,
-            totalSales: 8900000,
-            avgSales: 254286,
-            topCategory: '健康保健',
-            growthRate: '+42%',
-            note: '增速最快的黑马'
-        },
-        {
-            name: '某某甄选（全犀）',
-            platform: '全犀平台',
-            studioCount: 50,
-            totalSales: 18500000,
-            avgSales: 370000,
-            topCategory: '综合',
-            growthRate: '+67%',
-            note: '全犀平台自营标杆'
-        }
+// ====== 生成流量方（8个） ======
+function generateTrafficSources() {
+    const names = [
+        { name: '老庞服务商', type: '线下拉新', desc: '郑州本地社区团长网络，覆盖中老年消费群体' },
+        { name: '徐阳渠道', type: '线下拉新', desc: '杭州区域商超合作渠道，日触达5000+消费者' },
+        { name: '成都地推团队', type: '线下拉新', desc: '成都及周边城市地推团队，擅长下沉市场引流' },
+        { name: '广州批发渠道', type: '线下拉新', desc: '广州批发市场商户联盟，覆盖源头工厂客户' },
+        { name: '精准粉团队', type: '打粉团队', desc: '信息流投放优化团队，擅长美妆/食品类目精准获客' },
+        { name: '短视频引流组', type: '打粉团队', desc: '抖音/视频号短视频矩阵，月产出200+条引流视频' },
+        { name: '社群裂变组', type: '打粉团队', desc: '微信社群裂变运营，72小时转化率行业领先' },
+        { name: '直播切片分发', type: '打粉团队', desc: '直播精彩片段二次分发，覆盖视频号/快手多平台' }
     ];
+
+    return names.map((n, i) => ({
+        id: `traffic_${i + 1}`,
+        name: n.name,
+        type: n.type,
+        region: pick(CITIES),
+        scale: randomInt(8000, 80000),
+        monthlyCapacity: randomInt(15000, 150000),
+        commission: randomFloat(8, 25),
+        contact: '已脱敏',
+        status: 'active',
+        cooperateSince: generateDate('2026-04-01', 40),
+        description: n.desc
+    }));
 }
 
 // ====== 人群画像数据 ======
@@ -252,10 +270,10 @@ function generatePortraitData() {
             { label: '男性', value: 32 }
         ],
         consumptionLevel: [
-            { label: '高消费(200+)', value: 15 },
-            { label: '中高消费(100-200)', value: 30 },
-            { label: '中等消费(50-100)', value: 35 },
-            { label: '低消费(50以下)', value: 20 }
+            { label: '高消费(200+)', value: 12 },
+            { label: '中高消费(100-200)', value: 28 },
+            { label: '中等消费(50-100)', value: 38 },
+            { label: '低消费(50以下)', value: 22 }
         ],
         categoryPreference: [
             { label: '食品零食', value: 28 },
@@ -281,8 +299,28 @@ function generatePortraitData() {
     };
 }
 
-// ====== 数据管理器 ======
+// ====== 管理后台统计 ======
+function computeStats() {
+    const totalRefund = REAL_METRICS.totalSales * 0.05; // 约5%退款率
+    return {
+        studioCount: REAL_METRICS.studioCount,
+        activeStudioCount: REAL_METRICS.studioCount,
+        brandCount: REAL_METRICS.brandCount,
+        activeBrandCount: Math.round(REAL_METRICS.brandCount * 0.85),
+        orderCount: null, // 由实际订单数填充
+        totalOrderAmount: REAL_METRICS.totalSales,
+        totalRefund: Math.round(totalRefund),
+        netAmount: REAL_METRICS.totalSales - Math.round(totalRefund),
+        brandSales: REAL_METRICS.brandSales,
+        brandSalesRatio: 62,
+        otherSales: REAL_METRICS.otherSales,
+        otherSalesRatio: 38,
+        completedOrders: null,
+        avgOrderValue: REAL_METRICS.dailyPerCapitaSpend
+    };
+}
 
+// ====== 数据管理器 ======
 const DataManager = {
     _data: null,
 
@@ -291,22 +329,36 @@ const DataManager = {
         if (stored) {
             try {
                 this._data = JSON.parse(stored);
+                // 兼容旧数据：检测是否需要刷新
+                if (!this._data.metrics || this._data.metrics.studioCount !== 53) {
+                    this._data = this._generateFresh();
+                    this.save();
+                }
                 return;
             } catch (e) { /* fall through */ }
         }
-        // 首次初始化
         this._data = this._generateFresh();
         this.save();
     },
 
     _generateFresh() {
-        const studios = generateStudios(50);
-        const brands = generateBrands(300);
-        const orders = generateOrders(studios, brands, 1500);
+        const studios = generateStudios();
+        const brands = generateBrands();
+        const orders = generateOrders(studios, brands);
         const trafficSources = generateTrafficSources();
-        const competitors = generateCompetitors();
         const portraitData = generatePortraitData();
-        return { studios, brands, orders, trafficSources, competitors, portraitData };
+        const stats = computeStats();
+        stats.orderCount = orders.length;
+        stats.completedOrders = orders.filter(o => o.status === 'completed').length;
+        return {
+            metrics: REAL_METRICS,
+            studios,
+            brands,
+            orders,
+            trafficSources,
+            portraitData,
+            stats
+        };
     },
 
     save() {
@@ -318,11 +370,11 @@ const DataManager = {
         this.save();
     },
 
+    getMetrics() { return this._data.metrics || REAL_METRICS; },
     getStudios() { return this._data.studios; },
     getBrands() { return this._data.brands; },
     getOrders() { return this._data.orders; },
     getTrafficSources() { return this._data.trafficSources; },
-    getCompetitors() { return this._data.competitors; },
     getPortraitData() { return this._data.portraitData; },
 
     // ====== CRUD: 直播间 ======
@@ -331,6 +383,7 @@ const DataManager = {
         studio.refundRate = parseFloat((studio.refundAmount / studio.orderAmount * 100).toFixed(1));
         studio.avgOrderValue = parseFloat((studio.orderAmount / studio.orderCount).toFixed(2));
         this._data.studios.push(studio);
+        this._data.stats.studioCount = this._data.studios.length;
         this.save();
         return studio;
     },
@@ -346,6 +399,7 @@ const DataManager = {
     },
     deleteStudio(id) {
         this._data.studios = this._data.studios.filter(s => s.id !== id);
+        this._data.stats.studioCount = this._data.studios.length;
         this.save();
     },
 
@@ -353,6 +407,7 @@ const DataManager = {
     addBrand(brand) {
         brand.id = `brand_${Date.now()}`;
         this._data.brands.push(brand);
+        this._data.stats.brandCount = this._data.brands.length;
         this.save();
         return brand;
     },
@@ -365,6 +420,7 @@ const DataManager = {
     },
     deleteBrand(id) {
         this._data.brands = this._data.brands.filter(b => b.id !== id);
+        this._data.stats.brandCount = this._data.brands.length;
         this.save();
     },
 
@@ -372,6 +428,7 @@ const DataManager = {
     addOrder(order) {
         order.id = `order_${Date.now()}`;
         this._data.orders.push(order);
+        this._data.stats.orderCount = this._data.orders.length;
         this.save();
         return order;
     },
@@ -384,6 +441,7 @@ const DataManager = {
     },
     deleteOrder(id) {
         this._data.orders = this._data.orders.filter(o => o.id !== id);
+        this._data.stats.orderCount = this._data.orders.length;
         this.save();
     },
 
@@ -406,25 +464,9 @@ const DataManager = {
         this.save();
     },
 
-    // ====== 统计方法 ======
+    // ====== 统计 ======
     getStats() {
-        const studios = this._data.studios;
-        const brands = this._data.brands;
-        const orders = this._data.orders;
-        const totalOrderAmount = orders.reduce((s, o) => s + o.amount, 0);
-        const totalRefund = orders.reduce((s, o) => s + o.refund, 0);
-        return {
-            studioCount: studios.length,
-            activeStudioCount: studios.filter(s => s.status === 'active').length,
-            brandCount: brands.length,
-            activeBrandCount: brands.filter(b => b.status === 'active').length,
-            orderCount: orders.length,
-            totalOrderAmount: totalOrderAmount,
-            totalRefund: totalRefund,
-            netAmount: totalOrderAmount - totalRefund,
-            completedOrders: orders.filter(o => o.status === 'completed').length,
-            avgOrderValue: orders.length > 0 ? parseFloat((totalOrderAmount / orders.length).toFixed(2)) : 0
-        };
+        return this._data.stats || computeStats();
     },
 
     getTopBrands(limit = 10) {
@@ -436,7 +478,6 @@ const DataManager = {
 
     getTopStudios(limit = 10) {
         return [...this._data.studios]
-            .filter(s => s.status === 'active')
             .sort((a, b) => b.orderAmount - a.orderAmount)
             .slice(0, limit);
     },

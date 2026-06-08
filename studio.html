@@ -48,27 +48,18 @@
                 </div>
             </div>
 
-            <!-- 竞对情报 -->
+            <!-- 平台销售数据 -->
             <div class="card">
                 <div class="card-header">
-                    <h2>📊 竞对入驻情报</h2>
-                    <span style="font-size:13px;color:var(--gray-500);">数据来源：公开信息</span>
+                    <h2>📊 平台销售数据</h2>
+                    <span style="font-size:13px;color:var(--gray-500);">自2026年5月1日上线</span>
                 </div>
                 <div class="card-body">
-                    <div class="table-container">
-                        <table>
-                            <thead><tr>
-                                <th>平台/机构</th>
-                                <th>直播间</th>
-                                <th>总销售额</th>
-                                <th>场均</th>
-                                <th>增速</th>
-                            </tr></thead>
-                            <tbody id="competitorBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="mt-3" style="padding:12px;background:var(--primary-bg);border-radius:var(--radius);font-size:13px;color:var(--primary-dark);">
-                        💡 全犀平台场均销售额高于行业平均水平，增速领先
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="platformSalesGrid"></div>
+                    <div class="mt-3" style="padding:16px;background:var(--primary-bg);border-radius:var(--radius);">
+                        <div style="font-size:13px;color:var(--gray-600);margin-bottom:8px;">📈 销售额构成</div>
+                        <div id="salesBreakdownBar"></div>
+                        <div id="salesBreakdownText" style="font-size:13px;color:var(--gray-600);margin-top:8px;"></div>
                     </div>
                 </div>
             </div>

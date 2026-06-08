@@ -21,26 +21,43 @@ document.addEventListener('DOMContentLoaded', () => {
 // ====== 渲染统计 ======
 function renderStats() {
     const s = DataManager.getStats();
+    const metrics = DataManager.getMetrics();
+    const dailySales = metrics.totalAudience * metrics.dailyPerCapitaSpend;
     document.getElementById('statsGrid').innerHTML = `
         <div class="stat-card">
             <div class="stat-icon" style="background:#dbeafe;color:#2563eb;">📺</div>
             <div class="stat-value">${s.studioCount}</div>
-            <div class="stat-label">直播间总数 / 活跃 ${s.activeStudioCount}</div>
+            <div class="stat-label">直播间总数</div>
+            <div class="stat-change up">合计 ${(metrics.totalAudience/10000).toFixed(1)} 万受众</div>
         </div>
         <div class="stat-card">
             <div class="stat-icon" style="background:#d1fae5;color:#059669;">🏢</div>
             <div class="stat-value">${s.brandCount}</div>
             <div class="stat-label">品牌方总数 / 活跃 ${s.activeBrandCount}</div>
+            <div class="stat-change up">${metrics.productCategoryCount} 个在售品类</div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon" style="background:#fef3c7;color:#d97706;">📋</div>
+            <div class="stat-icon" style="background:#fef3c7;color:#d97706;">💰</div>
+            <div class="stat-value">¥${(s.totalOrderAmount / 100000000).toFixed(2)}亿</div>
+            <div class="stat-label">总销售额（含退款）</div>
+            <div class="stat-change up">品牌方 ¥${(s.brandSales/100000000).toFixed(2)}亿 (${s.brandSalesRatio}%)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fce4ec;color:#e91e63;">📈</div>
+            <div class="stat-value">¥${(dailySales / 10000).toFixed(1)}万</div>
+            <div class="stat-label">日均销售额</div>
+            <div class="stat-change up">${metrics.totalAudience.toLocaleString()}人 × ¥${metrics.dailyPerCapitaSpend}/人</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#f0fdf4;color:#059669;">📋</div>
             <div class="stat-value">${s.orderCount.toLocaleString()}</div>
-            <div class="stat-label">订单总数 / 已完成 ${s.completedOrders.toLocaleString()}</div>
+            <div class="stat-label">订单样本数 / 已完成 ${s.completedOrders.toLocaleString()}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon" style="background:#fce4ec;color:#e91e63;">💰</div>
-            <div class="stat-value">¥${(s.netAmount / 10000).toFixed(1)}万</div>
-            <div class="stat-label">交易净额 / 总额 ¥${(s.totalOrderAmount/10000).toFixed(1)}万</div>
+            <div class="stat-icon" style="background:#fffbeb;color:#d97706;">📅</div>
+            <div class="stat-value">${metrics.operatingDays}天</div>
+            <div class="stat-label">运营天数（自 ${metrics.launchDate}）</div>
+            <div class="stat-change up">日均直播 ${metrics.dailyLiveHours} 小时</div>
         </div>
     `;
 }
